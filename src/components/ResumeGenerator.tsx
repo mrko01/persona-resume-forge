@@ -5,6 +5,7 @@ import InitialQuestions from '@/components/InitialQuestions';
 import AIInterviewer from '@/components/AIInterviewer';
 import ResumePreview from '@/components/ResumePreview';
 import { ResumeData } from '@/types/resume';
+import { CheckCircle, Clock, User, Bot, FileText } from 'lucide-react';
 
 export type Step = 'initial' | 'interview' | 'preview';
 
@@ -53,56 +54,75 @@ const ResumeGenerator = () => {
     });
   };
 
-  const getStepTitle = (step: Step) => {
-    switch (step) {
-      case 'initial': return 'Initial Setup';
-      case 'interview': return 'AI Interview';
-      case 'preview': return 'Resume Preview';
+  const steps = [
+    { 
+      key: 'initial' as Step, 
+      title: 'Setup', 
+      description: 'Basic information',
+      icon: User 
+    },
+    { 
+      key: 'interview' as Step, 
+      title: 'Interview', 
+      description: 'AI-powered questions',
+      icon: Bot 
+    },
+    { 
+      key: 'preview' as Step, 
+      title: 'Preview', 
+      description: 'Review & download',
+      icon: FileText 
     }
-  };
-
-  const getStepDescription = (step: Step) => {
-    switch (step) {
-      case 'initial': return 'Tell us about yourself';
-      case 'interview': return 'Answer personalized questions';
-      case 'preview': return 'Review and download';
-    }
-  };
+  ];
 
   return (
     <div className="max-w-7xl mx-auto">
       {/* Enhanced Progress Indicator */}
       <div className="mb-8">
-        <div className="flex items-center justify-center space-x-8">
-          {(['initial', 'interview', 'preview'] as Step[]).map((step, index) => {
-            const stepNumber = index + 1;
-            const isActive = currentStep === step;
+        <div className="flex items-center justify-center space-x-6">
+          {steps.map((step, index) => {
+            const isActive = currentStep === step.key;
             const isCompleted = (
-              (step === 'initial' && (currentStep === 'interview' || currentStep === 'preview')) ||
-              (step === 'interview' && currentStep === 'preview')
+              (step.key === 'initial' && (currentStep === 'interview' || currentStep === 'preview')) ||
+              (step.key === 'interview' && currentStep === 'preview')
             );
+            const IconComponent = step.icon;
             
             return (
-              <React.Fragment key={step}>
-                <div className={`flex flex-col items-center ${isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'}`}>
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 font-semibold text-lg transition-all duration-300 ${
+              <React.Fragment key={step.key}>
+                <div className={`flex flex-col items-center transition-all duration-300 ${isActive ? 'scale-110' : ''}`}>
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center border-3 font-semibold text-lg transition-all duration-300 ${
                     isActive 
-                      ? 'border-blue-600 bg-blue-100 shadow-lg scale-110' 
+                      ? 'border-blue-500 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-200' 
                       : isCompleted 
-                        ? 'border-green-600 bg-green-100' 
-                        : 'border-gray-300 bg-gray-50'
+                        ? 'border-green-500 bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg shadow-green-200' 
+                        : 'border-gray-300 bg-white text-gray-400'
                   }`}>
-                    {isCompleted ? '✓' : stepNumber}
+                    {isCompleted ? (
+                      <CheckCircle className="w-6 h-6" />
+                    ) : isActive ? (
+                      <IconComponent className="w-6 h-6" />
+                    ) : (
+                      <Clock className="w-6 h-6" />
+                    )}
                   </div>
-                  <div className="mt-2 text-center">
-                    <div className="font-medium text-sm">{getStepTitle(step)}</div>
-                    <div className="text-xs text-gray-500">{getStepDescription(step)}</div>
+                  <div className="mt-3 text-center">
+                    <div className={`font-semibold text-sm ${isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-500'}`}>
+                      {step.title}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">{step.description}</div>
                   </div>
                 </div>
-                {index < 2 && (
-                  <div className={`w-16 h-1 rounded-full transition-all duration-300 ${
-                    isCompleted ? 'bg-green-600' : 'bg-gray-300'
-                  }`}></div>
+                {index < steps.length - 1 && (
+                  <div className="flex items-center">
+                    <div className={`w-20 h-1 rounded-full transition-all duration-500 ${
+                      isCompleted ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gray-200'
+                    }`}>
+                      <div className={`h-full rounded-full transition-all duration-500 ${
+                        isCompleted ? 'w-full bg-gradient-to-r from-green-500 to-emerald-600' : 'w-0'
+                      }`} />
+                    </div>
+                  </div>
                 )}
               </React.Fragment>
             );
@@ -110,22 +130,24 @@ const ResumeGenerator = () => {
         </div>
       </div>
 
-      <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
-        {currentStep === 'initial' && (
-          <InitialQuestions onComplete={handleInitialComplete} />
-        )}
-        {currentStep === 'interview' && (
-          <AIInterviewer 
-            initialData={resumeData} 
-            onComplete={handleInterviewComplete}
-          />
-        )}
-        {currentStep === 'preview' && (
-          <ResumePreview 
-            resumeData={resumeData} 
-            onStartOver={handleStartOver}
-          />
-        )}
+      <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm rounded-3xl overflow-hidden">
+        <div className="min-h-[600px]">
+          {currentStep === 'initial' && (
+            <InitialQuestions onComplete={handleInitialComplete} />
+          )}
+          {currentStep === 'interview' && (
+            <AIInterviewer 
+              initialData={resumeData} 
+              onComplete={handleInterviewComplete}
+            />
+          )}
+          {currentStep === 'preview' && (
+            <ResumePreview 
+              resumeData={resumeData} 
+              onStartOver={handleStartOver}
+            />
+          )}
+        </div>
       </Card>
     </div>
   );
