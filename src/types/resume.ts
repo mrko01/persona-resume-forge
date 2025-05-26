@@ -7,6 +7,9 @@ export interface PersonalInfo {
   linkedin?: string;
   github?: string;
   website?: string;
+  grade?: string; // For high school students
+  school?: string; // For high school students
+  graduationYear?: string; // For high school students
 }
 
 export interface Experience {
@@ -16,6 +19,7 @@ export interface Experience {
   endDate: string;
   description: string[];
   location?: string;
+  isVolunteer?: boolean; // For high school activities
 }
 
 export interface Education {
@@ -25,6 +29,7 @@ export interface Education {
   graduationDate: string;
   gpa?: string;
   honors?: string[];
+  isHighSchool?: boolean;
 }
 
 export interface Project {
@@ -44,6 +49,9 @@ export interface ResumeData {
   skills: string[];
   projects: Project[];
   achievements: string[];
+  extracurriculars?: string[]; // For high school students
+  volunteerWork?: Experience[]; // For high school students
+  isHighSchoolStudent?: boolean;
 }
 
 export interface AIMessage {

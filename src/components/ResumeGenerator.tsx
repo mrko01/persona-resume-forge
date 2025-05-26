@@ -18,7 +18,10 @@ const ResumeGenerator = () => {
     education: [],
     skills: [],
     projects: [],
-    achievements: []
+    achievements: [],
+    extracurriculars: [],
+    volunteerWork: [],
+    isHighSchoolStudent: false
   });
 
   const handleInitialComplete = (data: Partial<ResumeData>) => {
@@ -43,38 +46,71 @@ const ResumeGenerator = () => {
       education: [],
       skills: [],
       projects: [],
-      achievements: []
+      achievements: [],
+      extracurriculars: [],
+      volunteerWork: [],
+      isHighSchoolStudent: false
     });
   };
 
+  const getStepTitle = (step: Step) => {
+    switch (step) {
+      case 'initial': return 'Initial Setup';
+      case 'interview': return 'AI Interview';
+      case 'preview': return 'Resume Preview';
+    }
+  };
+
+  const getStepDescription = (step: Step) => {
+    switch (step) {
+      case 'initial': return 'Tell us about yourself';
+      case 'interview': return 'Answer personalized questions';
+      case 'preview': return 'Review and download';
+    }
+  };
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="mb-6">
-        <div className="flex items-center justify-center space-x-4">
-          <div className={`flex items-center ${currentStep === 'initial' ? 'text-blue-600' : currentStep === 'interview' || currentStep === 'preview' ? 'text-green-600' : 'text-gray-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === 'initial' ? 'border-blue-600 bg-blue-100' : currentStep === 'interview' || currentStep === 'preview' ? 'border-green-600 bg-green-100' : 'border-gray-300'}`}>
-              1
-            </div>
-            <span className="ml-2 font-medium">Initial Setup</span>
-          </div>
-          <div className={`w-12 h-0.5 ${currentStep === 'interview' || currentStep === 'preview' ? 'bg-green-600' : 'bg-gray-300'}`}></div>
-          <div className={`flex items-center ${currentStep === 'interview' ? 'text-blue-600' : currentStep === 'preview' ? 'text-green-600' : 'text-gray-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === 'interview' ? 'border-blue-600 bg-blue-100' : currentStep === 'preview' ? 'border-green-600 bg-green-100' : 'border-gray-300'}`}>
-              2
-            </div>
-            <span className="ml-2 font-medium">AI Interview</span>
-          </div>
-          <div className={`w-12 h-0.5 ${currentStep === 'preview' ? 'bg-green-600' : 'bg-gray-300'}`}></div>
-          <div className={`flex items-center ${currentStep === 'preview' ? 'text-blue-600' : 'text-gray-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === 'preview' ? 'border-blue-600 bg-blue-100' : 'border-gray-300'}`}>
-              3
-            </div>
-            <span className="ml-2 font-medium">Resume Preview</span>
-          </div>
+    <div className="max-w-7xl mx-auto">
+      {/* Enhanced Progress Indicator */}
+      <div className="mb-8">
+        <div className="flex items-center justify-center space-x-8">
+          {(['initial', 'interview', 'preview'] as Step[]).map((step, index) => {
+            const stepNumber = index + 1;
+            const isActive = currentStep === step;
+            const isCompleted = (
+              (step === 'initial' && (currentStep === 'interview' || currentStep === 'preview')) ||
+              (step === 'interview' && currentStep === 'preview')
+            );
+            
+            return (
+              <React.Fragment key={step}>
+                <div className={`flex flex-col items-center ${isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'}`}>
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 font-semibold text-lg transition-all duration-300 ${
+                    isActive 
+                      ? 'border-blue-600 bg-blue-100 shadow-lg scale-110' 
+                      : isCompleted 
+                        ? 'border-green-600 bg-green-100' 
+                        : 'border-gray-300 bg-gray-50'
+                  }`}>
+                    {isCompleted ? '✓' : stepNumber}
+                  </div>
+                  <div className="mt-2 text-center">
+                    <div className="font-medium text-sm">{getStepTitle(step)}</div>
+                    <div className="text-xs text-gray-500">{getStepDescription(step)}</div>
+                  </div>
+                </div>
+                {index < 2 && (
+                  <div className={`w-16 h-1 rounded-full transition-all duration-300 ${
+                    isCompleted ? 'bg-green-600' : 'bg-gray-300'
+                  }`}></div>
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
       </div>
 
-      <Card className="shadow-xl border-0">
+      <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
         {currentStep === 'initial' && (
           <InitialQuestions onComplete={handleInitialComplete} />
         )}
