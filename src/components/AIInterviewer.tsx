@@ -301,7 +301,7 @@ Focus on concrete facts, company names, job titles, schools, and quantified achi
 
       const response = await groq.chat.completions.create({
         messages: [{ role: 'user', content: dataExtractionPrompt }],
-        model: "meta-llama/llama-4-maverick-17b-128e-instruct",
+        model: "meta-llama/llama-3.1-70b-versatile",
         temperature: 0.1,
         max_completion_tokens: 1500
       });
